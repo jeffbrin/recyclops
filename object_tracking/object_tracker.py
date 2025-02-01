@@ -1,7 +1,7 @@
 
 import cv2
 import numpy as np
-from hardware.cameras.imx500 import IMX500Camera
+from hardware.cameras.imx500_camera import IMX500Camera
 from utils.custom_logger import get_logger
 
 # Initialize logger
