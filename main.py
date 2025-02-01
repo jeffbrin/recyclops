@@ -1,41 +1,43 @@
+import time
 from object_tracking.object_tracker import ObjectTracker
 from utils.custom_logger import get_logger
-from hardware.cameras.imx500_camera import IMX500Camera
-from hardware.motion_sensor.ultrasonic_motion_sensor import UltrasonicSensor
-from utils.custom_logger import get_logger
 
+# Initialize logger
 logger = get_logger(__name__)
-
-def object_detected(distance):
-    """
-    Callback function triggered when an object is detected.
-    Captures an image using the IMX500 camera.
-    :param distance: The detected distance to the object.
-    """
-    logger.info(f"Object detected at {distance} cm! Capturing image...")
-    
-    camera = IMX500Camera()
-    img_path = camera.capture_image("detected_object.jpg")
-    
-    if img_path:
-        logger.info(f"Image successfully captured: {img_path}")
-    else:
-        logger.error("Failed to capture image.")
 
 def main():
     """
-    Main entry point: Initializes the ultrasonic sensor and starts monitoring.
+    Main function to continuously scan for objects, capture images, 
+    and process them before returning to scanning.
     """
     logger.info("Starting object detection system...")
-
-    sensor = UltrasonicSensor(trigger_distance=10, callback=object_detected)
+    
+    tracker = ObjectTracker(detection_distance=10)
 
     try:
-        sensor.start_monitoring()
+        while True:
+            # Scan for a new object
+            image_path = tracker.scan_for_new_object()
+            
+            if image_path:
+                logger.info(f"Captured image: {image_path}")
+
+                # Process the captured image
+                detected_object = tracker.process_latest_image()
+                logger.info(f"Detected Object: {detected_object}")
+
+                # Simulate further processing or display results
+                print(f"Object recognized: {detected_object}")
+
+                # Simulated delay before resuming scanning (Optional)
+                logger.info("Processing complete. Returning to scanning mode.")
+
+    except KeyboardInterrupt:
+        logger.info("Shutting down system...")
     except Exception as e:
         logger.critical(f"Unhandled exception: {e}")
     finally:
-        sensor.cleanup()
+        tracker.cleanup()
 
 if __name__ == "__main__":
     main()
