@@ -1,3 +1,4 @@
+import time
 from object_tracking.object_tracker import ObjectTracker
 from utils.custom_logger import get_logger
 from face_display.face_display import FaceDisplay
@@ -7,54 +8,38 @@ logger = get_logger(__name__)
 
 
 def main():
-    # # Look for the object at the object
-    # tracker = ObjectTracker()
 
-    # try:
-    #     # Capture Image
-    #     img_path = tracker.get_object_image("scanned_item.jpg")
-        
-    #     if img_path:
-    #         # Run Object Detection
-    #         detected_object = tracker.detect_object()
-    #         print(f"Detected Object: {detected_object}")
-
-    #         # Track Object Movement
-    #         bin_id = tracker.track_object_to_bin(None)
-    #         print(f"Object placed in: {bin_id}")
-
-    # except Exception as e:
-    #     logger.critical(f"Unhandled exception: {e}")
-    # finally:
-    #     tracker.cleanup()
-    # cam = IMX500Camera()
-
-    # try:
-    #     img_path = cam.capture_image("test_object.jpg")
-    #     if img_path:
-    #         detected_object = cam.detect_object()
-    #         print(f"Detected: {detected_object}")
-    # except Exception as e:
-    #     logger.critical(f"Unhandled exception: {e}")
-    # finally:
-    #     cam.cleanup()
+    """
+    Main function to continuously scan for objects, capture images, 
+    and process them before returning to scanning.
+    """
+    logger.info("Starting object detection system...")
     
-    face_display = FaceDisplay()
-    face_display.display_message("Hello, World!", 5)
+    tracker = ObjectTracker(detection_distance=10)
 
-    # Identify the object materials
+    try:
+        while True:
+            # Scan for a new object
+            image_path = tracker.scan_for_new_object()
+            
+            if image_path:
+                logger.info(f"Captured image: {image_path}")
+                # Process the captured image
+                detected_object = tracker.process_latest_image()
+                logger.info(f"Detected Object: {detected_object}")
 
-    # Track the object
+                # Simulate further processing or display results
+                print(f"Object recognized: {detected_object}")
 
-    # Get the result
+                # Simulated delay before resuming scanning (Optional)
+                logger.info("Processing complete. Returning to scanning mode.")
 
-    # Display face based on result
-
-    # Generate comment
-
-    # Turn comment to speech
-
-    # Make face neutral
+    except KeyboardInterrupt:
+        logger.info("Shutting down system...")
+    except Exception as e:
+        logger.critical(f"Unhandled exception: {e}")
+    finally:
+        tracker.cleanup()
 
 if __name__ == "__main__":
     main()

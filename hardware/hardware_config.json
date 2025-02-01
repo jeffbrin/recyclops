@@ -1,5 +1,5 @@
 {
-    "TRIG_PIN": 23,
-    "ECHO_PIN": 24,
+    "TRIG_PIN": 22,
+    "ECHO_PIN": 23,
     "I2C_LCD_ADDRESS": 39
 }
