@@ -1,0 +1,5 @@
+RPLCD
+smbus2
+pyttsx3
+pygame
+numpy
