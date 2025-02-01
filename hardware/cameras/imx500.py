@@ -1,6 +1,5 @@
 import os
 import cv2
-import time
 from utils.custom_logger import get_logger
 
 # Initialize the logger
