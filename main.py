@@ -26,7 +26,7 @@ def main():
     #     logger.critical(f"Unhandled exception: {e}")
     # finally:
     #     tracker.cleanup()
-    cam = IMX500Camera(camera_id=0, ai_enabled=True)
+    cam = IMX500Camera()
 
     try:
         img_path = cam.capture_image("test_object.jpg")
