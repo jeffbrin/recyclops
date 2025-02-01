@@ -71,7 +71,7 @@ the JSON objects absolutely no prose. Do not include ```json to start or ``` to 
             temperature=self.temperature,
             max_tokens=self.max_tokens
         )
-
+ 
         return parse_api_response(response.choices[0].message.content)
 
     def _generate_prompt(self) -> str:
