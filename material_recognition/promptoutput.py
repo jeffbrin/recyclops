@@ -17,7 +17,6 @@ class ResponseComponent:
     disposable_category: str
 
     def __init__(self, component: dict) -> None:
-        print(component)
         self.component_name = component['component']
         self.material = component['material']
         try:

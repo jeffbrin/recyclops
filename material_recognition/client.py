@@ -4,8 +4,8 @@ import os
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
 
-from utils import base64_encode_image_from_file
-from promptoutput import parse_api_response, ResponseComponent
+from .utils import base64_encode_image_from_file
+from .promptoutput import parse_api_response, ResponseComponent
 
 
 class OpenAIClient(OpenAI):
@@ -23,8 +23,10 @@ Instructions:
 Questions:
 - For each component in the image, determine wheter it belongs to recycling, Garbage, Compost, or Edge Case.
 Format:
+
+Return Format:
 - Return only a list of JSON objects, where each object maps a component name, the material and the disposable category. Only return
-the JSON objects absolutely no prose."""
+the JSON objects absolutely no prose. Do not include ```json to start or ``` to end."""
 
     def __init__(self, municipality: str = "Montreal", model: str = "gpt-4o", temperature: int = 1, max_tokens: int = 1024):
             load_dotenv(".env")
@@ -70,8 +72,7 @@ the JSON objects absolutely no prose."""
             max_tokens=self.max_tokens
         )
 
-        print(response.choices[0].message.content.strip("```").lstrip("json"))
-        return parse_api_response(response.choices[0].message.content.strip("```").lstrip("json"))
+        return parse_api_response(response.choices[0].message.content)
 
     def _generate_prompt(self) -> str:
         """
