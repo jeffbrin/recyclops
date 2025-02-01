@@ -25,7 +25,7 @@ Questions:
 Format:
 
 Return Format:
-- Return only a list of JSON objects, where each object maps a component name, the material and the disposable category. Only return
+- Return only a list of JSON objects, where each object maps a component name, a description of the component, the material and the disposable category. Only return
 the JSON objects absolutely no prose. Do not include ```json to start or ``` to end."""
 
     def __init__(self, municipality: str = "Montreal", model: str = "gpt-4o", temperature: int = 1, max_tokens: int = 1024):
