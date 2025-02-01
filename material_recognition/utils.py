@@ -1,5 +1,3 @@
-from .promptoutput import PromptOutput
-
 from base64 import b64encode
 
 def base64_encode_image_from_file(image_path: str) -> bytes:

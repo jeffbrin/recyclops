@@ -4,8 +4,8 @@ import os
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
 
-from .utils import base64_encode_image_from_file
-from .promptoutput import parse_api_response, ResponseComponent
+from utils import base64_encode_image_from_file
+from promptoutput import parse_api_response, ResponseComponent
 
 
 class OpenAIClient(OpenAI):
@@ -27,9 +27,9 @@ Format:
 the JSON objects absolutely no prose."""
 
     def __init__(self, municipality: str = "Montreal", model: str = "gpt-4o", temperature: int = 1, max_tokens: int = 1024):
-            load_dotenv()
+            load_dotenv(".env")
             api_key = os.environ.get("API_KEY")
-            self.client = OpenAIClient(api_key)
+            self.client = OpenAI(api_key=api_key)
             self.model = model
             self.temperature = temperature
             self.max_tokens = max_tokens
