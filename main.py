@@ -1,11 +1,14 @@
 import time
 from object_tracking.object_tracker import ObjectTracker
 from utils.custom_logger import get_logger
-
-# Initialize logger
+from face_display.face_display import FaceDisplay
+from hardware.cameras.imx500_camera import IMX500Camera
+# Initialize the logger
 logger = get_logger(__name__)
 
+
 def main():
+
     """
     Main function to continuously scan for objects, capture images, 
     and process them before returning to scanning.
@@ -21,7 +24,6 @@ def main():
             
             if image_path:
                 logger.info(f"Captured image: {image_path}")
-
                 # Process the captured image
                 detected_object = tracker.process_latest_image()
                 logger.info(f"Detected Object: {detected_object}")
