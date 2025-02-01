@@ -1,8 +1,11 @@
+import os
 import time
 from object_tracking.object_tracker import ObjectTracker
 from utils.custom_logger import get_logger
 from face_display.face_display import FaceDisplay
 from hardware.cameras.imx500_camera import IMX500Camera
+from material_recognition import OpenAIClient
+
 # Initialize the logger
 logger = get_logger(__name__)
 
@@ -15,7 +18,10 @@ def main():
     """
     logger.info("Starting object detection system...")
     
+    client = OpenAIClient(model="gpt-4o-mini")
+    
     tracker = ObjectTracker(detection_distance=10)
+    
 
     try:
         while True:
@@ -25,6 +31,9 @@ def main():
             if image_path:
                 logger.info(f"Captured image: {image_path}")
                 # Process the captured image
+                
+                response_objects = client.prompt(filepath)
+                
                 detected_object = tracker.process_latest_image()
                 logger.info(f"Detected Object: {detected_object}")
 
