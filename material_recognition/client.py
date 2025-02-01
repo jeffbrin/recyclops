@@ -70,7 +70,8 @@ the JSON objects absolutely no prose."""
             max_tokens=self.max_tokens
         )
 
-        return parse_api_response(response.choices[0].message)
+        print(response.choices[0].message.content.strip("```").lstrip("json"))
+        return parse_api_response(response.choices[0].message.content.strip("```").lstrip("json"))
 
     def _generate_prompt(self) -> str:
         """
