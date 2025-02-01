@@ -1,8 +1,7 @@
 import time
-import RPi.GPIO as GPIO
+import lgpio
 from utils.custom_logger import get_logger
 from utils.configuration import get_hardware_config
-
 
 logger = get_logger(__name__)
 
@@ -21,10 +20,12 @@ class UltrasonicSensor:
         self.trigger_distance = trigger_distance
         self.callback = callback
 
+        # Initialize GPIO chip
+        self.chip = lgpio.gpiochip_open(0)
+
         # Setup GPIO
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.trig_pin, GPIO.OUT)
-        GPIO.setup(self.echo_pin, GPIO.IN)
+        lgpio.gpio_claim_output(self.chip, self.trig_pin)  # Trig as OUTPUT
+        lgpio.gpio_claim_input(self.chip, self.echo_pin)   # Echo as INPUT
 
         logger.info(f"Ultrasonic Sensor initialized on TRIG={self.trig_pin}, ECHO={self.echo_pin}")
 
@@ -33,19 +34,20 @@ class UltrasonicSensor:
         Measures the distance to the nearest object using the ultrasonic sensor.
         :return: Distance in cm.
         """
-        GPIO.output(self.trig_pin, True)
+        # Send trigger pulse
+        lgpio.gpio_write(self.chip, self.trig_pin, 1)
         time.sleep(0.00001)  # 10µs pulse
-        GPIO.output(self.trig_pin, False)
+        lgpio.gpio_write(self.chip, self.trig_pin, 0)
 
         start_time = time.time()
         stop_time = time.time()
 
-        # Record the last low-to-high transition (signal sent)
-        while GPIO.input(self.echo_pin) == 0:
+        # Wait for echo to start
+        while lgpio.gpio_read(self.chip, self.echo_pin) == 0:
             start_time = time.time()
 
-        # Record the last high-to-low transition (signal received)
-        while GPIO.input(self.echo_pin) == 1:
+        # Wait for echo to stop
+        while lgpio.gpio_read(self.chip, self.echo_pin) == 1:
             stop_time = time.time()
 
         # Calculate time difference
@@ -84,7 +86,7 @@ class UltrasonicSensor:
         """
         Cleans up GPIO resources.
         """
-        GPIO.cleanup()
+        lgpio.gpiochip_close(self.chip)  # Close GPIO chip
         logger.info("Ultrasonic Sensor GPIO cleaned up.")
 
 if __name__ == "__main__":
