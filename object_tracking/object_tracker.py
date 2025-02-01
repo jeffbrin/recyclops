@@ -15,7 +15,7 @@ class ObjectTracker:
         Initializes the object tracking module with an ultrasonic sensor and a camera.
         :param detection_distance: Distance (in cm) to detect an object.
         """
-        self.camera = IMX500Camera(camera_id=0, ai_enabled=True)
+        self.camera = IMX500Camera()
         self.sensor = UltrasonicSensor(trigger_distance=detection_distance, callback=self._on_object_detected)
         self.image_ready = False
         self.image_path = None
@@ -26,11 +26,13 @@ class ObjectTracker:
         Captures an image and marks it as ready for processing.
         """
         logger.info(f"Object detected at {distance} cm. Preparing to capture an image...")
-        time.sleep(2)  # Give time for the object to be properly placed
+        # Give time for the object to be properly placed
+        time.sleep(2)  
 
         self.image_path = self._capture_image()
         if self.image_path:
-            self.image_ready = True  # Indicate the image is ready for processing
+            # Indicate the image is ready for processing
+            self.image_ready = True
 
     def _capture_image(self):
         """
@@ -53,7 +55,9 @@ class ObjectTracker:
         Runs object recognition on the most recently captured image.
         :return: The name of the detected object.
         """
-        return self.camera.detect_object()
+        detected_object = self.camera.detect_object()
+        logger.info(f"Detected object: {detected_object}")
+        return detected_object
 
     def scan_for_new_object(self):
         """
@@ -93,7 +97,7 @@ if __name__ == "__main__":
             image_path = tracker.scan_for_new_object()
             if image_path:
                 detected_object = tracker.process_latest_image()
-                print(f"Detected Object: {detected_object}")
+                print(f"Object recognized: {detected_object}")
 
                 # Simulate processing before resuming scanning
                 logger.info("Processing completed. Resuming scanning mode.")
