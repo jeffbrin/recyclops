@@ -1,6 +1,7 @@
 from object_tracking.object_tracker import ObjectTracker
 from utils.custom_logger import get_logger
-from hardware.cameras.imx500 import IMX500Camera
+from face_display.face_display import FaceDisplay
+from hardware.cameras.imx500_camera import IMX500Camera
 # Initialize the logger
 logger = get_logger(__name__)
 
@@ -26,18 +27,20 @@ def main():
     #     logger.critical(f"Unhandled exception: {e}")
     # finally:
     #     tracker.cleanup()
-    cam = IMX500Camera()
+    # cam = IMX500Camera()
 
-    try:
-        img_path = cam.capture_image("test_object.jpg")
-        if img_path:
-            detected_object = cam.detect_object()
-            print(f"Detected: {detected_object}")
-    except Exception as e:
-        logger.critical(f"Unhandled exception: {e}")
-    finally:
-        cam.cleanup()
-
+    # try:
+    #     img_path = cam.capture_image("test_object.jpg")
+    #     if img_path:
+    #         detected_object = cam.detect_object()
+    #         print(f"Detected: {detected_object}")
+    # except Exception as e:
+    #     logger.critical(f"Unhandled exception: {e}")
+    # finally:
+    #     cam.cleanup()
+    
+    face_display = FaceDisplay()
+    face_display.display_message("Hello, World!", 5)
 
     # Identify the object materials
 
