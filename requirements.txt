@@ -3,6 +3,10 @@ smbus2
 pyttsx3
 pygame
 numpy
+opencv-contrib-python==4.11.0.86
+opencv-python==4.11.0.86
+rpi-lgpio==0.6
+lgpio==0.2.2.0
 annotated-types==0.7.0
 anyio==4.8.0
 certifi==2025.1.31
