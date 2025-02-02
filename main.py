@@ -10,7 +10,7 @@ logger = get_logger(__name__)
 def main():
     logger.info("Starting object detection system...")
     garbage_tracker = ObjectTracker(detection_distance=10)
-    openai = OpenAIClient(model="gpt-4o-mini")
+    openai_client = OpenAIClient(model="gpt-4o-mini")
 
     try:
         while True:
@@ -20,7 +20,7 @@ def main():
             if image_path:
                 logger.info(f"Captured image: {image_path}")
                 # Process the captured image
-                response_objects = openai.prompt(image_path)
+                response_objects = openai_client.prompt(image_path)
                 
                 detected_object = garbage_tracker.process_latest_image()
                 logger.info(f"Detected Object: {detected_object}")
@@ -30,6 +30,7 @@ def main():
 
                 # Simulated delay before resuming scanning (Optional)
                 logger.info("Processing complete. Returning to scanning mode.")
+
 
     except KeyboardInterrupt:
         logger.info("Shutting down system...")
