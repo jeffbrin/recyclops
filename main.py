@@ -35,7 +35,7 @@ def main():
 
             # Look for object in specific locations
             print("Capturing Image")
-            image = garbage_tracker.capture_image_no_file()
+            image = garbage_tracker._capture_image()
             print(image)
             input("INPUT")
 
