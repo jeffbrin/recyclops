@@ -28,8 +28,7 @@ class UltrasonicSensor:
         lgpio.gpio_claim_output(self.chip, self.trig_pin)  # Trig as OUTPUT
         lgpio.gpio_claim_input(self.chip, self.echo_pin)   # Echo as INPUT
 
-        logger.info(f"Ultrasonic Sensor initialized on TRIG={
-                    self.trig_pin}, ECHO={self.echo_pin}")
+        logger.info(f"Ultrasonic Sensor initialized on TRIG={self.trig_pin}, ECHO={self.echo_pin}")
 
     def get_distance(self):
         """
@@ -65,8 +64,8 @@ class UltrasonicSensor:
         Continuously monitors distance and triggers the callback when an object is detected.
         :param check_interval: Time (in seconds) between distance checks.
         """
-        logger.info(f"Starting ultrasonic sensor monitoring... (Trigger distance: {
-                    self.trigger_distance} cm)")
+        logger.info(f"Starting ultrasonic sensor monitoring... " +
+                    f"(Trigger distance: {self.trigger_distance} cm)")
 
         try:
             while True:
@@ -74,11 +73,11 @@ class UltrasonicSensor:
                 logger.info(f"Measured distance: {distance} cm")
 
                 if distance < self.trigger_distance:
-                    logger.info(f"Object detected within {
-                                self.trigger_distance} cm!")
+                    logger.info(f"Object detected within {self.trigger_distance} cm!")
 
                     if self.callback:  # Call the user-defined function
-                        self.callback(distance)
+                        if self.callback(distance):
+                            return
 
                 time.sleep(check_interval)  # Wait before next measurement
         except KeyboardInterrupt:

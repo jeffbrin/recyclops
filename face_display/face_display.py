@@ -76,8 +76,7 @@ class FaceDisplay:
             else:
                 lcd.display_message(face_message)
         except Exception as e:
-            logger.critical(f"Unhandled exception while displaying face '{
-                            face_type}': {e}")
+            logger.critical(f"Unhandled exception while displaying face '{face_type}': {e}")
 
     def display_angry_face(self, duration=None):
         """

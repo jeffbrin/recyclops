@@ -52,8 +52,7 @@ class TextToSpeech:
                 self.engine.setProperty('voice', voices[voice_id].id)
                 logger.info(f"Voice set to ID {voice_id}.")
             else:
-                logger.warning(f"Invalid voice ID {
-                               voice_id}. Using default voice.")
+                logger.warning(f"Invalid voice ID {voice_id}. Using default voice.")
 
     def speak(self, text: str):
         """

@@ -27,8 +27,7 @@ class ObjectTracker:
         Internal callback triggered when an object is detected.
         Captures an image and marks it as ready for processing.
         """
-        logger.info(f"Object detected at {
-                    distance} cm. Preparing to capture an image...")
+        logger.info(f"Object detected at {distance} cm. Preparing to capture an image...")
         # Give time for the object to be properly placed
         time.sleep(2)
 
@@ -36,6 +35,8 @@ class ObjectTracker:
         if self.image_path:
             # Indicate the image is ready for processing
             self.image_ready = True
+            return True
+        return False
 
     def _capture_image(self):
         """
