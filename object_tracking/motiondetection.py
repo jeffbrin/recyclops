@@ -12,37 +12,55 @@ def sort_images(filenames):
         return int(final)
     return sorted(filenames, key=remove_letters)
 
-motion_threshold = 0.02
-images = sort_images([os.path.join('testphotos', image) for image in os.listdir('testphotos')])
-prev_frame = cv2.imread(images[0])
-prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
 
-for image in images[1:]:
-    filepath = image
+def motion_detection():
+    motion_threshold = 0.02
+    images = sort_images([os.path.join('testphotos', image) for image in os.listdir('testphotos')])
+    prev_frame = cv2.imread(images[0])
+    prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
 
-    img = cv2.imread(filepath)
+    for image in images[1:]:
+        filepath = image
 
-    cv2.namedWindow('frame', cv2.WINDOW_AUTOSIZE)
-    window_name = 'image'
-    # cv2.imshow(window_name, img)
-    cv2.waitKey(1)
+        img = cv2.imread(filepath)
+
+        cv2.namedWindow('frame', cv2.WINDOW_AUTOSIZE)
+        window_name = 'image'
+        # cv2.imshow(window_name, img)
+        cv2.waitKey(1)
+        cv2.destroyAllWindows()
+
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
+        frame_diff = cv2.absdiff(gray, prev_frame)
+        _, thresh = cv2.threshold(frame_diff, 40, 255, cv2.THRESH_BINARY)
+        prev_frame = gray.copy()
+
+        motion_pixels = np.count_nonzero(thresh)
+        total_pixels = thresh.size
+        motion_ratio = motion_pixels / total_pixels
+
+        if motion_ratio >= motion_threshold:
+            cv2.namedWindow('frame', cv2.WINDOW_AUTOSIZE)
+            cv2.imshow(window_name, thresh)
+
+        time.sleep(0.05)
+
+
+
+def masking(image, mask_dim : list[list, list]):
+
+    img = cv2.imread(image)
+
+    mask = np.zeros(img.shape[:2], np.uint8)
+    cv2.rectangle(mask, mask_dim[0], mask_dim[1], 255, -1)
+
+    masked = cv2.bitwise_and(img, img, mask = mask)
+    
+    cv2.namedWindow('Display', cv2.WINDOW_AUTOSIZE)
+    cv2.imshow('Display', masked)
+    cv2.waitKey(5000)
     cv2.destroyAllWindows()
 
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
-    frame_diff = cv2.absdiff(gray, prev_frame)
-    _, thresh = cv2.threshold(frame_diff, 40, 255, cv2.THRESH_BINARY)
-    prev_frame = gray.copy()
+    return masked
 
-    motion_pixels = np.count_nonzero(thresh)
-    total_pixels = thresh.size
-    motion_ratio = motion_pixels / total_pixels
-
-    cv2.namedWindow('frame', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow(window_name, thresh)
-    
-    if motion_ratio >= motion_threshold:
-        cv2.namedWindow('frame', cv2.WINDOW_AUTOSIZE)
-        cv2.imshow(window_name, thresh)
-
-    time.sleep(0.05)
-
+masking('object_tracking/test0.jpg', [[0, 90], [290, 450]])
