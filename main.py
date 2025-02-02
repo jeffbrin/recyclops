@@ -4,6 +4,7 @@ from utils.custom_logger import get_logger
 from face_display.face_display import FaceDisplay
 from text_to_speech.comment_genrator import get_comment, ResultType
 from text_to_speech.tts import TextToSpeech
+from text_to_speech.response_to_text_converter import turn_response_to_text
 from material_recognition import OpenAIClient
 
 # Initialize the logger
@@ -32,7 +33,15 @@ def main():
                 logger.info(f"Captured image: {image_path}")
                 # Process the captured image
                 response_objects = client.prompt(image_path)
-                
+
+                # Tell the user what the object is and where to put it
+                suggestions = turn_response_to_text(response_objects)
+
+                # Turn suggestions to speech
+                for suggestion in suggestions:
+                    tts = TextToSpeech()
+                    tts.speak(suggestion)
+
                 # Track the object
 
                 # Check that the object was put in the right place
