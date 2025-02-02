@@ -27,7 +27,7 @@ class TextToSpeechManager:
         """
         Adds text to the speech queue.
         """
-        self.speech_queue.put(text)
+        self.tts.speak(text)
 
     def shutdown(self):
         """

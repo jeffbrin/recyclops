@@ -18,17 +18,22 @@ class ResponseComponent:
     disposable_category: str
 
     def __init__(self, component: dict) -> None:
-        self.component_name = component['component']
-        self.material = component['material']
         try:
-            self.recycling_number = component['recycling_number']
+            self.component_name = component['component']
+            self.material = component['material']
+            try:
+                self.recycling_number = component['recycling_number']
+            except KeyError:
+                self.recycling_number = None
+            self.disposable_category = component['disposable_category']
         except KeyError:
-            pass
-        self.disposable_category = component['disposable_category']
+            self.component_name = None
+            self.material = None
+            self.recycling_number = None
+            self.disposable_category = None
 
     def __repr__(self):
         return f"{self.component_name}, {self.disposable_category}, {self.material} {f'#{self.recycling_number}' if hasattr(self, 'recycling_number') else ''}"
-
 
 def parse_api_response(chatgpt_response_message: str) -> list[ResponseComponent]:
     """

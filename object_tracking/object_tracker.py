@@ -1,5 +1,4 @@
 import time
-import cv2
 import numpy as np
 from datetime import datetime
 from hardware.cameras.imx500_camera import IMX500Camera
@@ -29,7 +28,7 @@ class ObjectTracker:
         """
         logger.info(f"Object detected at {distance} cm. Preparing to capture an image...")
         # Give time for the object to be properly placed
-        time.sleep(2)
+        time.sleep(1)
 
         self.image_path = self._capture_image()
         if self.image_path:
@@ -53,6 +52,11 @@ class ObjectTracker:
             logger.error("Failed to capture image.")
 
         return image_path
+    
+    def capture_image_no_file(self) -> None:
+
+        image = self.camera.capture_image_no_file()
+        return image
 
     def process_latest_image(self):
         """
