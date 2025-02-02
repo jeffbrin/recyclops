@@ -45,6 +45,26 @@ class IMX500Camera:
         except Exception as e:
             logger.error(f"Error capturing image: {e}")
             return None
+        
+    def capture_image_no_file(self):
+        """
+        Capture an image using libcamera-still and return it.
+        :param filename: Name of the image file.
+        :return: Full path to the saved image.
+        """
+        try:
+            
+            # Capture the image using libcamera-still
+            command = ["libcamera-still", "-o", "file.txt", "--nopreview"]
+            result = subprocess.run(command, capture_output=True, text=True)
+
+            if result.returncode != 0:
+                raise Exception(f"Failed to capture image: {result.stderr}")
+
+            return result
+        except Exception as e:
+            logger.error(f"Error capturing image: {e}")
+            return None
 
     def cleanup(self):
         """

@@ -49,6 +49,11 @@ class ObjectTracker:
             logger.error("Failed to capture image.")
 
         return image_path
+    
+    def capture_image_no_file(self) -> None:
+
+        image = self.camera.capture_image_no_file()
+        return image
 
     def process_latest_image(self):
         """
