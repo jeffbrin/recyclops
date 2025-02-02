@@ -168,4 +168,4 @@ the object, in which case, answer with "Unidentified"."""
     
     def prompt_which_part(self, part_image_path: str, component_names: list[str]) -> list[ResponseComponent]:
         image_bytes = base64_encode_image_from_file(part_image_path)
-        return self._prompt_model_for_individual_part(image_bytes)
+        return self._prompt_model_for_individual_part(image_bytes, component_names)

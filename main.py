@@ -26,9 +26,16 @@ def main():
     last_image = None
     # TODO: Remove
     # tracking_start_time = time()
+    mask_to_region_mapping = {
+        0: "Compost",
+        1: "Recycling",
+        2: "Garbage"
+    }
 
     MASK = [[[0, 500], [0, 500]], [[500, 999], [500, 999]]]
 
+    items = []
+    items_to_bin_mapping = {}
     try:
         while True:
 
@@ -42,10 +49,12 @@ def main():
 
                 if image_path:
                     logger.info(f"Captured image: {image_path}")
-                    
+
                     # Process the captured image
                     response_objects = client.prompt(image_path)
-                    response_objects = list(filter(lambda x: x.component_name is not None, response_objects))
+                    response_objects = list(
+                        filter(lambda x: x.component_name is not None, response_objects))
+                    items_to_bin_mapping = {obj.component_name.lower(): obj.disposable_category for obj in response_objects}
 
                     # Tell the user what the object is and where to put it
                     instructions = turn_response_to_text(response_objects)
@@ -54,11 +63,34 @@ def main():
                     for instruction in instructions:
                         tts_manager.speak(instruction)
 
-                    # Track the object
+                    state = TRACKING
+                    tracking_start_time = time()
+
+                    # Items to be detected
+                    items = []
+                    for component in response_objects:
+                        if component.component_name.lower() not in [i.lower() for i in items]:
+                            items.append(component.component_name.lower())
+
+            elif state == TRACKING:
+                filename = tracker._capture_image()
+                if last_image is None:
+                    last_image = filename
+                mask_idx = motion_detection(filename, last_image, MASK)
+                last_image = filename
+
+                sleep(0.3)
+
+                # Prompt openai to see what item was placed in the bin
+                if mask_idx != -1:
+                    
+                    component_name = client.prompt_which_part(filename, items)
+                    tts_manager.speak(f"Detected {component_name} placed in {mask_to_region_mapping[mask_idx]}")
 
                     # Check that the object was put in the right place
-                    result = random.choice(
-                        [ResultType.CORRECT, ResultType.INCORRECT])
+                    result = ResultType.CORRECT if component_name.lower() in items_to_bin_mapping and items_to_bin_mapping == mask_to_region_mapping[mask_idx] else ResultType.INCORRECT
+                    # result = random.choice(
+                    #     [ResultType.CORRECT, ResultType.INCORRECT])
 
                     # Display the face
                     face_display.display_happy_face(
@@ -70,31 +102,11 @@ def main():
                     # Turn comment to speech
                     for sentence in comment:
                         tts_manager.speak(sentence)
-                        state = TRACKING
-                        tracking_start_time = time()
-
-            elif state == TRACKING:
-                filename = tracker._capture_image()
-                if last_image is None:
-                    last_image = filename
-                mask_idx = motion_detection(filename, last_image, MASK)
-                last_image = filename
-
-                sleep(0.3)
-
-                if mask_idx != -1:
-                    items = []
-                    for component in response_objects:
-                        if component.name not in items:
-                            items.append(component.name)
-                    component_name = client.prompt_which_part(filename, items)
-                    print(component_name)
 
                 # Find better way of going back to previous state
                 if time() - tracking_start_time > 10:
                     state = SCANNING
                     last_image = None
-
 
     except KeyboardInterrupt:
         logger.info("Shutting down system...")
