@@ -15,13 +15,13 @@ class OpenAIClient(OpenAI):
 Instructions:
 - Analyze the provided image, which represents an item to be disposed of.
 - Each item may have multiple components (e.g., a cup and a lid).
-- Determine each visibile components that compose the image, for example, a cup and a lid.
+- Determine each visible components that compose the image, for example, a cup and a lid.
 - For each component, determine what material it is.
 - If you can recognize the brand of the product and is certain of what recycling number it is, return the recycling number
 - For each material, Classify each component as Recycling, Garbage, Compost or Edge case, based on the waste management rules of {0}.
  
 Questions:
-- For each component in the image, determine wheter it belongs to recycling, Garbage, Compost, or Edge Case.
+- For each component in the image, determine whether it belongs to recycling, Garbage, Compost, or Edge Case.
 Format:
 
 Return Format:
