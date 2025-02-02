@@ -1,5 +1,6 @@
 import json
 
+
 class ResponseComponent:
     """
     Object representing the components returned by the OpenAI API text.
@@ -28,8 +29,9 @@ class ResponseComponent:
     def __repr__(self):
         return f"{self.component_name}, {self.disposable_category}, {self.material} {f'#{self.recycling_number}' if hasattr(self, 'recycling_number') else ''}"
 
+
 def parse_api_response(chatgpt_response_message: str) -> list[ResponseComponent]:
-        """
+    """
         Takes the output of a chatgpt message and parses it.
 
         Parameters
@@ -58,6 +60,5 @@ def parse_api_response(chatgpt_response_message: str) -> list[ResponseComponent]
                 ]
         """
 
-        json_list = json.loads(chatgpt_response_message)
-        return [ResponseComponent(obj) for obj in json_list]
-
+    json_list = json.loads(chatgpt_response_message)
+    return [ResponseComponent(obj) for obj in json_list]

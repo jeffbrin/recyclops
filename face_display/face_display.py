@@ -16,7 +16,6 @@ class FaceDisplay:
         self._expressions = self._get_expressions()
         self._lcd = self._get_lcd()
 
-
     def _get_expressions(self):
         """
         Lazily load and return the face expressions.
@@ -28,14 +27,14 @@ class FaceDisplay:
             raise RuntimeError("Face expressions not available.")
         return expressions
 
-
     def _get_lcd(self):
         """
         Lazily initialize and return the LCD display.
         """
         logger.debug("Initializing LCD display...")
         try:
-            I2C_LCD_ADDRESS = self._hardware_config.get("I2C_LCD_ADDRESS", 0x27)
+            I2C_LCD_ADDRESS = self._hardware_config.get(
+                "I2C_LCD_ADDRESS", 0x27)
             lcd = LCDDisplay(address=I2C_LCD_ADDRESS)
             logger.info(f"LCD initialized at address {hex(I2C_LCD_ADDRESS)}")
         except Exception as e:
@@ -54,8 +53,8 @@ class FaceDisplay:
         try:
             self._lcd.display_timed_message(message, duration)
         except Exception as e:
-            logger.critical(f"Unhandled exception while displaying message: {e}")
-            
+            logger.critical(
+                f"Unhandled exception while displaying message: {e}")
 
     def _display_face(self, face_type: str, duration: int):
         """
@@ -65,7 +64,8 @@ class FaceDisplay:
         try:
             expressions = self._get_expressions()
             if face_type not in expressions:
-                logger.error(f"Face type '{face_type}' not found in expressions.json.")
+                logger.error(
+                    f"Face type '{face_type}' not found in expressions.json.")
                 return
 
             lcd = self._get_lcd()
@@ -76,8 +76,8 @@ class FaceDisplay:
             else:
                 lcd.display_message(face_message)
         except Exception as e:
-            logger.critical(f"Unhandled exception while displaying face '{face_type}': {e}")
-
+            logger.critical(f"Unhandled exception while displaying face '{
+                            face_type}': {e}")
 
     def display_angry_face(self, duration=None):
         """
@@ -85,15 +85,13 @@ class FaceDisplay:
         """
         self._display_face("angry", duration)
 
-
-    def display_happy_face(self,duration=None):
+    def display_happy_face(self, duration=None):
         """
         Display the 'happy' face on the LCD.
         """
         self._display_face("happy", duration)
 
-
-    def display_neutral_face(self,duration=None):
+    def display_neutral_face(self, duration=None):
         """
         Display the 'neutral' face on the LCD.
         """

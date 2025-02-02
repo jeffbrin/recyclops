@@ -5,6 +5,7 @@ from utils.custom_logger import get_logger
 # Initialize the logger
 logger = get_logger(__name__)
 
+
 class LCDDisplay:
     def __init__(self, address=0x27, bus_type='PCF8574', columns=16, rows=2):
         """
@@ -40,7 +41,8 @@ class LCDDisplay:
 
             for line in lines:
                 while line:
-                    formatted_lines.append(line[:self.columns].ljust(self.columns))
+                    formatted_lines.append(
+                        line[:self.columns].ljust(self.columns))
                     line = line[self.columns:] if wrap else ""
 
             # Combine formatted lines and truncate to the LCD height
@@ -89,6 +91,7 @@ if __name__ == "__main__":
 
     try:
         lcd.display_timed_message("I2C Address 0x27\nHello, World!", 5)
-        lcd.display_timed_message("This is a long message that exceeds the capacity\nof a 16x2 display!", 5)
+        lcd.display_timed_message(
+            "This is a long message that exceeds the capacity\nof a 16x2 display!", 5)
     except Exception as e:
         logger.critical(f"Unhandled exception: {e}")

@@ -12,7 +12,6 @@ logger = get_logger(__name__)
 
 
 def main():
-
     """
     Main function to continuously scan for objects, capture images, 
     and process them before returning to scanning.
@@ -22,13 +21,11 @@ def main():
     client = OpenAIClient(model="gpt-4o-mini")
     face_display = FaceDisplay()
 
-    
-
     try:
         while True:
             # Scan for a new object
             image_path = tracker.scan_for_new_object()
-            
+
             if image_path:
                 logger.info(f"Captured image: {image_path}")
                 # Process the captured image
@@ -45,10 +42,12 @@ def main():
                 # Track the object
 
                 # Check that the object was put in the right place
-                result = random.choice([ResultType.CORRECT, ResultType.INCORRECT])
+                result = random.choice(
+                    [ResultType.CORRECT, ResultType.INCORRECT])
 
                 # Display the face
-                face_display.display_happy_face() if result == ResultType.CORRECT else face_display.display_angry_face()
+                face_display.display_happy_face(
+                ) if result == ResultType.CORRECT else face_display.display_angry_face()
 
                 # Generate a comment based on the result
                 comment = get_comment(result)
@@ -61,14 +60,13 @@ def main():
                 # Make face neutral
                 face_display.display_neutral_face()
 
-
-
     except KeyboardInterrupt:
         logger.info("Shutting down system...")
     except Exception as e:
         logger.critical(f"Unhandled exception: {e}")
     finally:
         tracker.cleanup()
+
 
 if __name__ == "__main__":
     main()

@@ -7,8 +7,9 @@ from utils.custom_logger import get_logger
 # Initialize the logger
 logger = get_logger(__name__)
 
+
 class TextToSpeech:
-    def __init__(self, voice_id:int=None, rate:int=150):
+    def __init__(self, voice_id: int = None, rate: int = 150):
         """
         Initialize the TextToSpeech object.
 
@@ -30,7 +31,7 @@ class TextToSpeech:
         self.speaker = Speaker()
         self.speaker.set_volume(5.0)
 
-    def set_rate(self, rate:int):
+    def set_rate(self, rate: int):
         """
         Set the speech rate of the TTS engine.
 
@@ -40,7 +41,7 @@ class TextToSpeech:
             self.engine.setProperty('rate', rate)
             logger.info(f"Speech rate set to {rate} words per minute.")
 
-    def set_voice(self, voice_id:int):
+    def set_voice(self, voice_id: int):
         """
         Set the voice of the TTS engine.
         :param voice_id: Voice ID to use.
@@ -51,9 +52,10 @@ class TextToSpeech:
                 self.engine.setProperty('voice', voices[voice_id].id)
                 logger.info(f"Voice set to ID {voice_id}.")
             else:
-                logger.warning(f"Invalid voice ID {voice_id}. Using default voice.")
+                logger.warning(f"Invalid voice ID {
+                               voice_id}. Using default voice.")
 
-    def speak(self, text:str):
+    def speak(self, text: str):
         """
         Speak the given text using the TTS engine.
 

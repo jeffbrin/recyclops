@@ -5,6 +5,7 @@ from utils.custom_logger import get_logger
 # Initialize the logger
 logger = get_logger(__name__)
 
+
 class IMX500Camera:
     def __init__(self, image_path="captured_images/"):
         """
@@ -16,9 +17,11 @@ class IMX500Camera:
             os.makedirs(image_path, exist_ok=True)  # Ensure directory exists
 
             # Check if libcamera is available
-            result = subprocess.run(["which", "libcamera-still"], capture_output=True, text=True)
+            result = subprocess.run(
+                ["which", "libcamera-still"], capture_output=True, text=True)
             if result.returncode != 0:
-                raise Exception("libcamera-still is not installed or not found.")
+                raise Exception(
+                    "libcamera-still is not installed or not found.")
 
             logger.info("IMX500 Camera initialized using libcamera")
         except Exception as e:
@@ -32,7 +35,7 @@ class IMX500Camera:
         """
         try:
             filepath = os.path.join(self.image_path, filename)
-            
+
             # Capture the image using libcamera-still
             command = ["libcamera-still", "-o", filepath, "--nopreview"]
             result = subprocess.run(command, capture_output=True, text=True)
@@ -51,6 +54,7 @@ class IMX500Camera:
         Placeholder for any cleanup operations if needed.
         """
         logger.info("IMX500 Camera cleanup complete.")
+
 
 if __name__ == "__main__":
     cam = IMX500Camera()

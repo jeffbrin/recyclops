@@ -5,6 +5,7 @@ from utils.custom_logger import get_logger
 # Initialize the logger
 logger = get_logger(__name__)
 
+
 class Speaker:
     def __init__(self):
         """
@@ -33,16 +34,14 @@ class Speaker:
         except Exception as e:
             logger.error(f"Error playing sound: {e}")
 
-
     def set_volume(self, volume: float):
         """
         Set the volume of the speaker.
         :param volume: The volume of the speaker.
         """
         self.volume = volume
-        
 
-    def _make_sound(self, filename: str, factor: float)->pygame.mixer.Sound: 
+    def _make_sound(self, filename: str, factor: float) -> pygame.mixer.Sound:
         """
         Make a sound object from the file and amplify it by the factor.
 
@@ -52,13 +51,15 @@ class Speaker:
         try:
             sound = pygame.mixer.Sound(filename)
             samples = pygame.sndarray.array(sound)
-            amplified_samples = np.clip(samples * factor, -32768, 32767).astype(np.int16)
+            amplified_samples = np.clip(
+                samples * factor, -32768, 32767).astype(np.int16)
             amplified_sound = pygame.sndarray.make_sound(amplified_samples)
             logger.debug(f"Sound amplified by {factor}.")
             return amplified_sound
         except Exception as e:
             logger.error(f"Error making sound: {e}")
             return None
+
 
 if __name__ == "__main__":
     speaker = Speaker()
