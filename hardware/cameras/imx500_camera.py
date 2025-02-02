@@ -23,11 +23,13 @@ class IMX500Camera:
             self.picam2 = Picamera2()
             self.picam2.configure(self.picam2.create_still_configuration(
                 main={"format": 'RGB888', "size": (1000, 1000)}))
+            self.picam2.start()
+
 
             # Check if libcamera is available
-            result = subprocess.run(["which", "libcamera-still"], capture_output=True, text=True)
-            if result.returncode != 0:
-                raise Exception("libcamera-still is not installed or not found.")
+            # result = subprocess.run(["which", "libcamera-still"], capture_output=True, text=True)
+            # if result.returncode != 0:
+            #     raise Exception("libcamera-still is not installed or not found.")
 
             logger.info("IMX500 Camera initialized using libcamera")
         except Exception as e:
@@ -60,9 +62,6 @@ class IMX500Camera:
         Captures an image, stores it in memory and returns it as a PIL.Image.Image object.
         """
         
-        self.picam2.configure(self.capture_config)
-
-        self.picam2.start()
         return self.picam2.capture_image()
 
     def cleanup(self):
