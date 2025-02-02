@@ -2,65 +2,53 @@ import cv2
 import numpy as np
 import os
 import time 
+from time import sleep
+import PIL
 
-def sort_images(filenames):
-    def remove_letters(string: str):
-        final = str()
-        for c in string:
-            if c.isnumeric():
-                final += c
-        return int(final)
-    return sorted(filenames, key=remove_letters)
+def motion_detection(image_filepath: str, previous_image_filepath: str, mask_dim: list[list, list] =  [[[0, 500], [0, 500]]]) -> int:
+    """
+    Returns the index of the mask where motion was detected.
+    Returns -1 if no motion was detected.
+    """
+
+    for i, mask in enumerate(mask_dim):
+        motion_threshold = 0.02
+        prev_frame = cv2.imread(previous_image_filepath)
+        prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
+        prev_frame = masking(prev_frame, mask)
 
 
-def motion_detection():
-    motion_threshold = 0.02
-    images = sort_images([os.path.join('testphotos', image) for image in os.listdir('testphotos')])
-    prev_frame = cv2.imread(images[0])
-    prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
-
-    for image in images[1:]:
-        filepath = image
+        filepath = image_filepath
 
         img = cv2.imread(filepath)
-
-        cv2.namedWindow('frame', cv2.WINDOW_AUTOSIZE)
-        window_name = 'image'
-        # cv2.imshow(window_name, img)
-        cv2.waitKey(1)
-        cv2.destroyAllWindows()
-
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
+        gray = masking(gray, mask)
+
         frame_diff = cv2.absdiff(gray, prev_frame)
         _, thresh = cv2.threshold(frame_diff, 40, 255, cv2.THRESH_BINARY)
-        prev_frame = gray.copy()
 
         motion_pixels = np.count_nonzero(thresh)
-        total_pixels = thresh.size
+        total_pixels = (mask[0][1] - mask[0][0]) * (mask[1][1] - mask[1][0])
         motion_ratio = motion_pixels / total_pixels
 
+
         if motion_ratio >= motion_threshold:
+            print("MOVEMENT")
+            # TODO: Remove
             cv2.namedWindow('frame', cv2.WINDOW_AUTOSIZE)
-            cv2.imshow(window_name, thresh)
+            cv2.imshow('window', thresh)
+            cv2.waitKey(1000)
+            cv2.destroyAllWindows()
+            return i
+        return -1
 
-        time.sleep(0.05)
+def masking(image, mask : list[list, list]):
 
+    zeros_mask = np.zeros(image.shape[:2], np.uint8)
+    cv2.rectangle(zeros_mask, [mask[0][0], mask[1][0]], [mask[0][1], mask[1][1]], 255, -1)
 
-
-def masking(image, mask_dim : list[list, list]):
-
-    img = cv2.imread(image)
-
-    mask = np.zeros(img.shape[:2], np.uint8)
-    cv2.rectangle(mask, mask_dim[0], mask_dim[1], 255, -1)
-
-    masked = cv2.bitwise_and(img, img, mask = mask)
-    
-    cv2.namedWindow('Display', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Display', masked)
-    cv2.waitKey(5000)
-    cv2.destroyAllWindows()
+    masked = cv2.bitwise_and(image, image, mask = zeros_mask)
 
     return masked
 
-masking('object_tracking/test0.jpg', [[0, 90], [290, 450]])
+# masking('object_tracking/test0.jpg', [[0, 90], [290, 450]])
