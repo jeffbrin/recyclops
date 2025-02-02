@@ -1,9 +1,9 @@
-import os
-import time
+import random
 from object_tracking.object_tracker import ObjectTracker
 from utils.custom_logger import get_logger
 from face_display.face_display import FaceDisplay
-from hardware.cameras.imx500_camera import IMX500Camera
+from text_to_speech.comment_genrator import get_comment, ResultType
+from text_to_speech.tts import TextToSpeech
 from material_recognition import OpenAIClient
 
 # Initialize the logger
@@ -17,10 +17,10 @@ def main():
     and process them before returning to scanning.
     """
     logger.info("Starting object detection system...")
-    
-    client = OpenAIClient(model="gpt-4o-mini")
-    
     tracker = ObjectTracker(detection_distance=10)
+    client = OpenAIClient(model="gpt-4o-mini")
+    face_display = FaceDisplay()
+
     
 
     try:
@@ -31,17 +31,28 @@ def main():
             if image_path:
                 logger.info(f"Captured image: {image_path}")
                 # Process the captured image
+                response_objects = client.prompt(image_path)
                 
-                response_objects = client.prompt(filepath)
-                
-                detected_object = tracker.process_latest_image()
-                logger.info(f"Detected Object: {detected_object}")
+                # Track the object
 
-                # Simulate further processing or display results
-                print(f"Object recognized: {detected_object}")
+                # Check that the object was put in the right place
+                result = random.choice([ResultType.CORRECT, ResultType.INCORRECT])
 
-                # Simulated delay before resuming scanning (Optional)
-                logger.info("Processing complete. Returning to scanning mode.")
+                # Display the face
+                face_display.display_happy_face() if result == ResultType.CORRECT else face_display.display_angry_face()
+
+                # Generate a comment based on the result
+                comment = get_comment(result)
+
+                # Turn comment to speech
+                for sentence in comment:
+                    tts = TextToSpeech()
+                    tts.speak(sentence)
+
+                # Make face neutral
+                face_display.display_neutral_face()
+
+
 
     except KeyboardInterrupt:
         logger.info("Shutting down system...")
