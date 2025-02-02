@@ -1,6 +1,10 @@
 import os
 import subprocess
 from utils.custom_logger import get_logger
+import time
+
+from PIL import Image
+from picamera2 import Picamera2
 
 # Initialize the logger
 logger = get_logger(__name__)
@@ -14,6 +18,11 @@ class IMX500Camera:
         try:
             self.image_path = image_path
             os.makedirs(image_path, exist_ok=True)  # Ensure directory exists
+
+            # create fast camera and configure
+            self.picam2 = Picamera2()
+            self.picam2.configure(self.picam2.create_still_configuration(
+                main={"format": 'RGB888', "size": (1000, 1000)}))
 
             # Check if libcamera is available
             result = subprocess.run(["which", "libcamera-still"], capture_output=True, text=True)
@@ -46,25 +55,15 @@ class IMX500Camera:
             logger.error(f"Error capturing image: {e}")
             return None
         
-    def capture_image_no_file(self):
+    def capture_image_no_file(self) -> Image.Image:
         """
-        Capture an image using libcamera-still and return it.
-        :param filename: Name of the image file.
-        :return: Full path to the saved image.
+        Captures an image, stores it in memory and returns it as a PIL.Image.Image object.
         """
-        try:
-            
-            # Capture the image using libcamera-still
-            command = ["libcamera-still", "-o", "file.txt", "--nopreview"]
-            result = subprocess.run(command, capture_output=True, text=True)
+        
+        self.picam2.configure(self.capture_config)
 
-            if result.returncode != 0:
-                raise Exception(f"Failed to capture image: {result.stderr}")
-
-            return result
-        except Exception as e:
-            logger.error(f"Error capturing image: {e}")
-            return None
+        self.picam2.start()
+        return self.picam2.capture_image()
 
     def cleanup(self):
         """

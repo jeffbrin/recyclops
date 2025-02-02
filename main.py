@@ -1,6 +1,6 @@
 from object_tracking.object_tracker import ObjectTracker
 from utils.custom_logger import get_logger
-from face_display.face_display import FaceDisplay
+# from face_display.face_display import FaceDisplay
 from material_recognition import OpenAIClient
 
 from time import sleep
@@ -35,8 +35,9 @@ def main():
 
             # Look for object in specific locations
             print("Capturing Image")
-            filepath = garbage_tracker.capture_image_no_file()
-            print(filepath)
+            image = garbage_tracker.capture_image_no_file()
+            print(image)
+            input("INPUT")
             
 
 

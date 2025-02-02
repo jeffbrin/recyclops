@@ -1,5 +1,4 @@
 import time
-import cv2
 import numpy as np
 from datetime import datetime
 from hardware.cameras.imx500_camera import IMX500Camera
