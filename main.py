@@ -32,12 +32,12 @@ def main():
                 response_objects = client.prompt(image_path)
 
                 # Tell the user what the object is and where to put it
-                suggestions = turn_response_to_text(response_objects)
+                instructions = turn_response_to_text(response_objects)
 
                 # Turn suggestions to speech
-                for suggestion in suggestions:
+                for instruction in instructions:
                     tts = TextToSpeech()
-                    tts.speak(suggestion)
+                    tts.speak(instruction)
 
                 # Track the object
 
