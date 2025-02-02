@@ -39,8 +39,9 @@ def motion_detection(image_filepath: str, previous_image_filepath: str, mask_dim
             cv2.imshow('window', thresh)
             cv2.waitKey(1000)
             cv2.destroyAllWindows()
-            return i
-        return -1
+            cv2.imwrite(masking(img, mask), "/captured_images/masked_item.jpg")
+            return i, "/captured_images/masked_item.jpg"
+    return -1, None
 
 def masking(image, mask : list[list, list]):
 

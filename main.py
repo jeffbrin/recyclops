@@ -1,7 +1,7 @@
 import random
 from utils.custom_logger import get_logger
 from object_tracking.object_tracker import ObjectTracker
-from object_tracking.motiondetection import motion_detection
+from object_tracking.motiondetection import motion_detection, masking
 from face_display.face_display import FaceDisplay
 from text_to_speech.comment_genrator import get_comment, turn_response_to_text, ResultType
 from text_to_speech.speech_manager import TextToSpeechManager
@@ -32,7 +32,8 @@ def main():
         2: "Garbage"
     }
 
-    MASK = [[[0, 500], [0, 500]], [[500, 999], [500, 999]]]
+    MASK = [[[1350, 1900], [780, 1450]], [
+        [650, 1265], [753, 1440]], [[0, 577], [753, 1450]]]
 
     items = []
     items_to_bin_mapping = {}
@@ -54,7 +55,8 @@ def main():
                     response_objects = client.prompt(image_path)
                     response_objects = list(
                         filter(lambda x: x.component_name is not None, response_objects))
-                    items_to_bin_mapping = {obj.component_name.lower(): obj.disposable_category for obj in response_objects}
+                    items_to_bin_mapping = {obj.component_name.lower(
+                    ): obj.disposable_category for obj in response_objects}
 
                     # Tell the user what the object is and where to put it
                     instructions = turn_response_to_text(response_objects)
@@ -76,19 +78,21 @@ def main():
                 filename = tracker._capture_image()
                 if last_image is None:
                     last_image = filename
-                mask_idx = motion_detection(filename, last_image, MASK)
+                mask_idx, masked_image_filepath = motion_detection(filename, last_image, MASK)
                 last_image = filename
 
                 sleep(0.3)
 
                 # Prompt openai to see what item was placed in the bin
                 if mask_idx != -1:
-                    
-                    component_name = client.prompt_which_part(filename, items)
-                    tts_manager.speak(f"Detected {component_name} placed in {mask_to_region_mapping[mask_idx]}")
+
+                    component_name = client.prompt_which_part(masked_image_filepath, items)
+                    tts_manager.speak(
+                        f"Detected {component_name} placed in {mask_to_region_mapping[mask_idx]}")
 
                     # Check that the object was put in the right place
-                    result = ResultType.CORRECT if component_name.lower() in items_to_bin_mapping and items_to_bin_mapping == mask_to_region_mapping[mask_idx] else ResultType.INCORRECT
+                    result = ResultType.CORRECT if component_name.lower(
+                    ) in items_to_bin_mapping and items_to_bin_mapping == mask_to_region_mapping[mask_idx] else ResultType.INCORRECT
                     # result = random.choice(
                     #     [ResultType.CORRECT, ResultType.INCORRECT])
 
@@ -104,7 +108,7 @@ def main():
                         tts_manager.speak(sentence)
 
                 # Find better way of going back to previous state
-                if time() - tracking_start_time > 10:
+                if time() - tracking_start_time > 30:
                     state = SCANNING
                     last_image = None
 
