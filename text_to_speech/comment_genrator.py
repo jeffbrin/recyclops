@@ -33,7 +33,7 @@ def turn_response_to_text(response_objects):
     :return: List of formatted instructional strings.
     """
     instructions = []
-
+    instructions.append("It looks like you have ")
     for obj in response_objects:
         # Validate that all expected attributes exist
         if not hasattr(obj, "component_name") or not hasattr(obj, "material") or not hasattr(obj, "disposable_category"):
@@ -48,8 +48,9 @@ def turn_response_to_text(response_objects):
         disposable_category = obj.disposable_category if obj.disposable_category else "an unknown category"
 
         # Construct message
-        message = f"It looks like you have {component_name}, made of {material}{recycling_number}. Please put it in {disposable_category}. If that is not what you have, please pull it away and present it again."
+        message = f"A{'n' if component_name[0] in {'a', 'e', 'i', 'o', 'u'} else ''} {component_name}, made of {material}{recycling_number}. Please put it in {disposable_category}."
         instructions.append(message)
+    instructions.append("If that is not what you have, please pull it away and present it again.")
 
     return instructions
 
