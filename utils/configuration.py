@@ -4,6 +4,7 @@ from utils.json_reader import read_json
 # Initialize the logger
 logger = get_logger(__name__)
 
+
 def get_hardware_config():
     """
     Lazily load and return the hardware configuration.

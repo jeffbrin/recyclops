@@ -1,9 +1,10 @@
-import os
-import time
+import random
 from object_tracking.object_tracker import ObjectTracker
 from utils.custom_logger import get_logger
 from face_display.face_display import FaceDisplay
-from hardware.cameras.imx500_camera import IMX500Camera
+from text_to_speech.comment_genrator import get_comment, ResultType
+from text_to_speech.tts import TextToSpeech
+from text_to_speech.response_to_text_converter import turn_response_to_text
 from material_recognition import OpenAIClient
 
 # Initialize the logger
@@ -11,37 +12,56 @@ logger = get_logger(__name__)
 
 
 def main():
-
     """
     Main function to continuously scan for objects, capture images, 
     and process them before returning to scanning.
     """
     logger.info("Starting object detection system...")
-    
-    client = OpenAIClient(model="gpt-4o-mini")
-    
     tracker = ObjectTracker(detection_distance=10)
-    
+    client = OpenAIClient(model="gpt-4o-mini")
+    face_display = FaceDisplay()
 
     try:
+
         while True:
+    
+            # Make face neutral
+            face_display.display_neutral_face()
+
             # Scan for a new object
             image_path = tracker.scan_for_new_object()
-            
+
             if image_path:
                 logger.info(f"Captured image: {image_path}")
                 # Process the captured image
-                
-                response_objects = client.prompt(filepath)
-                
-                detected_object = tracker.process_latest_image()
-                logger.info(f"Detected Object: {detected_object}")
+                response_objects = client.prompt(image_path)
 
-                # Simulate further processing or display results
-                print(f"Object recognized: {detected_object}")
+                # Tell the user what the object is and where to put it
+                instructions = turn_response_to_text(response_objects)
 
-                # Simulated delay before resuming scanning (Optional)
-                logger.info("Processing complete. Returning to scanning mode.")
+                # Turn suggestions to speech
+                for instruction in instructions:
+                    tts = TextToSpeech()
+                    tts.speak(instruction)
+
+                # Track the object
+
+                # Check that the object was put in the right place
+                result = random.choice(
+                    [ResultType.CORRECT, ResultType.INCORRECT])
+
+                # Display the face
+                face_display.display_happy_face(
+                ) if result == ResultType.CORRECT else face_display.display_angry_face()
+
+                # Generate a comment based on the result
+                comment = get_comment(result)
+
+                # Turn comment to speech
+                for sentence in comment:
+                    tts = TextToSpeech()
+                    tts.speak(sentence)
+
 
     except KeyboardInterrupt:
         logger.info("Shutting down system...")
@@ -49,6 +69,7 @@ def main():
         logger.critical(f"Unhandled exception: {e}")
     finally:
         tracker.cleanup()
+
 
 if __name__ == "__main__":
     main()
