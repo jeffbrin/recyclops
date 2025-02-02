@@ -6,6 +6,8 @@ from text_to_speech.comment_genrator import get_comment, ResultType
 from text_to_speech.tts import TextToSpeech
 from text_to_speech.response_to_text_converter import turn_response_to_text
 from material_recognition import OpenAIClient
+from scoreboard.scoreboard import Scoreboard
+import random
 
 # Initialize the logger
 logger = get_logger(__name__)
@@ -21,6 +23,7 @@ def main():
     tracker = ObjectTracker(detection_distance=10)
     client = OpenAIClient(model="gpt-4o-mini")
     face_display = FaceDisplay()
+    scoreboard =Scoreboard()
 
     
 
@@ -47,6 +50,12 @@ def main():
                 # Check that the object was put in the right place
                 result = random.choice([ResultType.CORRECT, ResultType.INCORRECT])
 
+                #update and display scoreboard
+                components,user_bin_results = scoreboard.generate_dummy_data()
+                for i in range(0,len(components)):
+                    scoreboard.log_sorting_results(components[i],user_bin_results[i])
+                scoreboard.display_total_stats()
+                
                 # Display the face
                 face_display.display_happy_face() if result == ResultType.CORRECT else face_display.display_angry_face()
 
@@ -69,6 +78,7 @@ def main():
         logger.critical(f"Unhandled exception: {e}")
     finally:
         tracker.cleanup()
+        scoreboard.close_connection()
 
 if __name__ == "__main__":
     main()
