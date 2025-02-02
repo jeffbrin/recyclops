@@ -28,7 +28,7 @@ class ObjectTracker:
         """
         logger.info(f"Object detected at {distance} cm. Preparing to capture an image...")
         # Give time for the object to be properly placed
-        time.sleep(2)
+        time.sleep(0.5)
 
         self.image_path = self._capture_image()
         if self.image_path:
