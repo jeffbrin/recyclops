@@ -82,8 +82,8 @@ class UltrasonicSensor:
                 time.sleep(check_interval)  # Wait before next measurement
         except KeyboardInterrupt:
             logger.info("Ultrasonic sensor monitoring stopped.")
-        finally:
-            self.cleanup()
+        # finally:
+        #     self.cleanup()
 
     def cleanup(self):
         """

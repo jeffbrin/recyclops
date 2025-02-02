@@ -22,7 +22,12 @@ def main():
     face_display = FaceDisplay()
 
     try:
+
         while True:
+    
+            # Make face neutral
+            face_display.display_neutral_face()
+
             # Scan for a new object
             image_path = tracker.scan_for_new_object()
 
@@ -57,8 +62,6 @@ def main():
                     tts = TextToSpeech()
                     tts.speak(sentence)
 
-                # Make face neutral
-                face_display.display_neutral_face()
 
     except KeyboardInterrupt:
         logger.info("Shutting down system...")
