@@ -29,7 +29,6 @@ class ResponseComponent:
     def __repr__(self):
         return f"{self.component_name}, {self.disposable_category}, {self.material} {f'#{self.recycling_number}' if hasattr(self, 'recycling_number') else ''}"
 
-
 def parse_api_response(chatgpt_response_message: str) -> list[ResponseComponent]:
     """
         Takes the output of a chatgpt message and parses it.

@@ -6,6 +6,8 @@ from text_to_speech.comment_genrator import get_comment, turn_response_to_text, 
 from text_to_speech.speech_manager import TextToSpeechManager
 from material_recognition import OpenAIClient
 
+from time import sleep
+
 # Initialize the logger
 logger = get_logger(__name__)
 

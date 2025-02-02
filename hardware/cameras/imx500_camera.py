@@ -1,6 +1,10 @@
 import os
 import subprocess
 from utils.custom_logger import get_logger
+import time
+
+from PIL import Image
+from picamera2 import Picamera2
 
 # Initialize the logger
 logger = get_logger(__name__)
@@ -16,12 +20,16 @@ class IMX500Camera:
             self.image_path = image_path
             os.makedirs(image_path, exist_ok=True)  # Ensure directory exists
 
+            # create fast camera and configure
+            self.picam2 = Picamera2()
+            self.picam2.configure(self.picam2.create_still_configuration(
+                main={"format": 'RGB888', "size": (1000, 1000)}))
+            self.picam2.start()
+
             # Check if libcamera is available
-            result = subprocess.run(
-                ["which", "libcamera-still"], capture_output=True, text=True)
-            if result.returncode != 0:
-                raise Exception(
-                    "libcamera-still is not installed or not found.")
+            # result = subprocess.run(["which", "libcamera-still"], capture_output=True, text=True)
+            # if result.returncode != 0:
+            #     raise Exception("libcamera-still is not installed or not found.")
 
             logger.info("IMX500 Camera initialized using libcamera")
         except Exception as e:
@@ -35,19 +43,20 @@ class IMX500Camera:
         """
         try:
             filepath = os.path.join(self.image_path, filename)
-
-            # Capture the image using libcamera-still
-            command = ["libcamera-still", "-o", filepath, "--nopreview"]
-            result = subprocess.run(command, capture_output=True, text=True)
-
-            if result.returncode != 0:
-                raise Exception(f"Failed to capture image: {result.stderr}")
+            self.picam2.capture_file(filepath)
 
             logger.info(f"Image saved at: {filepath}")
             return filepath
         except Exception as e:
             logger.error(f"Error capturing image: {e}")
             return None
+        
+    def capture_image_no_file(self) -> Image.Image:
+        """
+        Captures an image, stores it in memory and returns it as a PIL.Image.Image object.
+        """
+        
+        return self.picam2.capture_image()
 
     def cleanup(self):
         """
