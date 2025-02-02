@@ -1,10 +1,9 @@
 import random
-from object_tracking.object_tracker import ObjectTracker
 from utils.custom_logger import get_logger
+from object_tracking.object_tracker import ObjectTracker
 from face_display.face_display import FaceDisplay
-from text_to_speech.comment_genrator import get_comment, ResultType
-from text_to_speech.tts import TextToSpeech
-from text_to_speech.response_to_text_converter import turn_response_to_text
+from text_to_speech.comment_genrator import get_comment, turn_response_to_text, ResultType
+from text_to_speech.speech_manager import TextToSpeechManager
 from material_recognition import OpenAIClient
 
 # Initialize the logger
@@ -12,19 +11,14 @@ logger = get_logger(__name__)
 
 
 def main():
-    """
-    Main function to continuously scan for objects, capture images, 
-    and process them before returning to scanning.
-    """
     logger.info("Starting object detection system...")
     tracker = ObjectTracker(detection_distance=10)
     client = OpenAIClient(model="gpt-4o-mini")
     face_display = FaceDisplay()
+    tts_manager = TextToSpeechManager()
 
     try:
-
         while True:
-    
             # Make face neutral
             face_display.display_neutral_face()
 
@@ -33,6 +27,7 @@ def main():
 
             if image_path:
                 logger.info(f"Captured image: {image_path}")
+                
                 # Process the captured image
                 response_objects = client.prompt(image_path)
 
@@ -41,8 +36,7 @@ def main():
 
                 # Turn suggestions to speech
                 for instruction in instructions:
-                    tts = TextToSpeech()
-                    tts.speak(instruction)
+                    tts_manager.speak(instruction)
 
                 # Track the object
 
@@ -59,8 +53,7 @@ def main():
 
                 # Turn comment to speech
                 for sentence in comment:
-                    tts = TextToSpeech()
-                    tts.speak(sentence)
+                    tts_manager.speak(sentence)
 
 
     except KeyboardInterrupt:
