@@ -38,8 +38,6 @@ def main():
             image = garbage_tracker.capture_image_no_file()
             print(image)
             input("INPUT")
-            
-
 
     except KeyboardInterrupt:
         logger.info("Shutting down system...")
