@@ -22,10 +22,13 @@ def main():
 
     SCANNING = 0
     TRACKING = 1
-    state = TRACKING
+    state = SCANNING
     last_image = None
     # TODO: Remove
-    tracking_start_time = time()
+    # tracking_start_time = time()
+
+    MASK = [[[0, 500], [0, 500]], [[500, 999], [500, 999]]]
+
     try:
         while True:
 
@@ -42,6 +45,7 @@ def main():
                     
                     # Process the captured image
                     response_objects = client.prompt(image_path)
+                    response_objects = list(filter(lambda x: x.component_name is not None, response_objects))
 
                     # Tell the user what the object is and where to put it
                     instructions = turn_response_to_text(response_objects)
@@ -73,18 +77,21 @@ def main():
                 filename = tracker._capture_image()
                 if last_image is None:
                     last_image = filename
-                mask_idx = motion_detection(filename, last_image)
+                mask_idx = motion_detection(filename, last_image, MASK)
                 last_image = filename
 
-                print(mask_idx)
-                sleep(1)
+                sleep(0.3)
 
                 if mask_idx != -1:
-                    component_name = client.prompt_which_part(filename)
+                    items = []
+                    for component in response_objects:
+                        if component.name not in items:
+                            items.append(component.name)
+                    component_name = client.prompt_which_part(filename, items)
                     print(component_name)
 
                 # Find better way of going back to previous state
-                if time() - tracking_start_time > 100:
+                if time() - tracking_start_time > 10:
                     state = SCANNING
                     last_image = None
 

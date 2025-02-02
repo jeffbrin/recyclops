@@ -23,7 +23,7 @@ class IMX500Camera:
             # create fast camera and configure
             self.picam2 = Picamera2()
             self.picam2.configure(self.picam2.create_still_configuration(
-                main={"format": 'RGB888', "size": (1000, 1000)}))
+                main={"format": 'RGB888', "size": (5000, 5000)}))
             self.picam2.start()
 
             # Check if libcamera is available

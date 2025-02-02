@@ -36,7 +36,7 @@ def turn_response_to_text(response_objects):
 
     for obj in response_objects:
         # Validate that all expected attributes exist
-        if not hasattr(obj, "component_name") or not hasattr(obj, "material") or not hasattr(obj, "recycling_number") or not hasattr(obj, "disposable_category"):
+        if not hasattr(obj, "component_name") or not hasattr(obj, "material") or not hasattr(obj, "disposable_category"):
             logger.error("Response object is missing expected attributes.")
             instructions.append("There was an issue understanding this item. Please try again.")
             continue  # Skip this object and move to the next

@@ -25,7 +25,7 @@ Questions:
 Format:
 
 Return Format:
-- Return only a list of JSON objects, where each object maps a component name, a description of the component, the material and the disposable category. Only return
+- Return only a list of JSON objects, where each object contains a "component", "description", "material", and "disposable_category" field. Only return
 the JSON objects absolutely no prose. Do not include ```json to start or ``` to end."""
 
     PART_PROMPT_TEMPLATE: str = """
@@ -33,6 +33,7 @@ Instructions:
 - Analyze the provided image, which represents an item that was disposed of.
 - Each image should only contain one component.
 - Determine which of the possible components is present in the photo.
+- The item should be one of the following: {0}
  
 Questions:
 - Using the image of the entire object as a reference, tell me what component of the object is in the current image.
@@ -87,7 +88,7 @@ the object, in which case, answer with "Unidentified"."""
 
         return parse_api_response(response.choices[0].message.content)
     
-    def _prompt_model_for_individual_part(self, image_bytes: bytes) -> str:
+    def _prompt_model_for_individual_part(self, image_bytes: bytes, item_component_names: list[str]) -> str:
         """
         Prompts the model and returns a list of ResponseComponents containing relevant data created by the model.
 
@@ -109,7 +110,7 @@ the object, in which case, answer with "Unidentified"."""
                     "content": [
                         {
                             "type": "text",
-                            "text": self._generate_individual_item_prompt(),
+                            "text": self._generate_individual_item_prompt(item_component_names),
                         },
                         {
                             "type": "image_url",
@@ -124,16 +125,17 @@ the object, in which case, answer with "Unidentified"."""
 
         return response.choices[0].message.content
 
-    def _generate_individual_item_prompt(self) -> str:
+    def _generate_individual_item_prompt(self, item_component_names) -> str:
         """
         Generates a prompts from the prompt template.
 
         Returns
         -------
         str
-            A string containing instructions to send to the model/
+            A string containing instructions to send to the model
         """
-        return OpenAIClient.PART_PROMPT_TEMPLATE
+        names = ", ".join(item_component_names)
+        return OpenAIClient.PART_PROMPT_TEMPLATE.format(names)
 
     def _generate_prompt(self) -> str:
         """
@@ -164,6 +166,6 @@ the object, in which case, answer with "Unidentified"."""
         image_bytes = base64_encode_image_from_file(image_path)
         return self._prompt_model(image_bytes)
     
-    def prompt_which_part(self, part_image_path: str) -> list[ResponseComponent]:
+    def prompt_which_part(self, part_image_path: str, component_names: list[str]) -> list[ResponseComponent]:
         image_bytes = base64_encode_image_from_file(part_image_path)
         return self._prompt_model_for_individual_part(image_bytes)
