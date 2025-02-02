@@ -8,6 +8,7 @@ from utils.custom_logger import get_logger
 # Initialize logger
 logger = get_logger(__name__)
 
+
 class ObjectTracker:
     def __init__(self, detection_distance=10):
         """
@@ -15,7 +16,8 @@ class ObjectTracker:
         :param detection_distance: Distance (in cm) to detect an object.
         """
         self.camera = IMX500Camera()
-        self.sensor = UltrasonicSensor(trigger_distance=detection_distance, callback=self._on_object_detected)
+        self.sensor = UltrasonicSensor(
+            trigger_distance=detection_distance, callback=self._on_object_detected)
         self.image_ready = False
         self.image_path = None
 
@@ -26,12 +28,14 @@ class ObjectTracker:
         """
         logger.info(f"Object detected at {distance} cm. Preparing to capture an image...")
         # Give time for the object to be properly placed
-        time.sleep(2)  
+        time.sleep(0.5)
 
         self.image_path = self._capture_image()
         if self.image_path:
             # Indicate the image is ready for processing
             self.image_ready = True
+            return True
+        return False
 
     def _capture_image(self):
         """
@@ -41,7 +45,7 @@ class ObjectTracker:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"scanned_object_{timestamp}.jpg"
         image_path = self.camera.capture_image(filename)
-        
+
         if image_path:
             logger.info(f"Image successfully captured: {image_path}")
         else:
@@ -91,6 +95,7 @@ class ObjectTracker:
         self.camera.cleanup()
         self.sensor.cleanup()
         logger.info("ObjectTracker resources released.")
+
 
 if __name__ == "__main__":
     # Example usage

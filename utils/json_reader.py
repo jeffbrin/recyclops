@@ -7,6 +7,7 @@ from utils.custom_logger import get_logger
 
 logger = get_logger(__name__)
 
+
 def read_json(file_path: str) -> Any:
     """
     Reads a JSON file and returns the parsed data.

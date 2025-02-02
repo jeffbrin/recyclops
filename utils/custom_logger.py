@@ -31,7 +31,8 @@ def get_logger(name):
     logger.setLevel(logging.DEBUG)
 
     # Ensure the logs directory exists in the project root
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    project_root = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), ".."))
     log_folder = os.path.join(project_root, "logs")
     os.makedirs(log_folder, exist_ok=True)
 

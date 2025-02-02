@@ -5,6 +5,7 @@ from utils.configuration import get_hardware_config
 
 logger = get_logger(__name__)
 
+
 class UltrasonicSensor:
     def __init__(self, trig_pin=23, echo_pin=24, trigger_distance=15, callback=None):
         """
@@ -63,7 +64,8 @@ class UltrasonicSensor:
         Continuously monitors distance and triggers the callback when an object is detected.
         :param check_interval: Time (in seconds) between distance checks.
         """
-        logger.info(f"Starting ultrasonic sensor monitoring... (Trigger distance: {self.trigger_distance} cm)")
+        logger.info(f"Starting ultrasonic sensor monitoring... " +
+                    f"(Trigger distance: {self.trigger_distance} cm)")
 
         try:
             while True:
@@ -72,15 +74,16 @@ class UltrasonicSensor:
 
                 if distance < self.trigger_distance:
                     logger.info(f"Object detected within {self.trigger_distance} cm!")
-                    
+
                     if self.callback:  # Call the user-defined function
-                        self.callback(distance)
-                    
+                        if self.callback(distance):
+                            return
+
                 time.sleep(check_interval)  # Wait before next measurement
         except KeyboardInterrupt:
             logger.info("Ultrasonic sensor monitoring stopped.")
-        finally:
-            self.cleanup()
+        # finally:
+        #     self.cleanup()
 
     def cleanup(self):
         """
@@ -89,6 +92,7 @@ class UltrasonicSensor:
         lgpio.gpiochip_close(self.chip)  # Close GPIO chip
         logger.info("Ultrasonic Sensor GPIO cleaned up.")
 
+
 if __name__ == "__main__":
     # Example usage: Define a simple callback function
     def object_detected(distance):
@@ -96,6 +100,6 @@ if __name__ == "__main__":
 
     # Initialize the ultrasonic sensor with a 10 cm trigger distance
     sensor = UltrasonicSensor(trigger_distance=10, callback=object_detected)
-    
+
     # Start monitoring
     sensor.start_monitoring()

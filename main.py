@@ -1,6 +1,9 @@
-from object_tracking.object_tracker import ObjectTracker
+import random
 from utils.custom_logger import get_logger
-# from face_display.face_display import FaceDisplay
+from object_tracking.object_tracker import ObjectTracker
+from face_display.face_display import FaceDisplay
+from text_to_speech.comment_genrator import get_comment, turn_response_to_text, ResultType
+from text_to_speech.speech_manager import TextToSpeechManager
 from material_recognition import OpenAIClient
 
 from time import sleep
@@ -11,40 +14,57 @@ logger = get_logger(__name__)
 
 def main():
     logger.info("Starting object detection system...")
-    garbage_tracker = ObjectTracker(detection_distance=10)
-    openai_client = OpenAIClient(model="gpt-4o-mini")
+    tracker = ObjectTracker(detection_distance=10)
+    client = OpenAIClient(model="gpt-4o-mini")
+    face_display = FaceDisplay()
+    tts_manager = TextToSpeechManager()
 
     try:
         while True:
-            # # Scan for a new object
-            # image_path = garbage_tracker.scan_for_new_object()
-            
-            # if image_path:
-            #     logger.info(f"Captured image: {image_path}")
-            #     # Process the captured image
-            #     response_objects = openai_client.prompt(image_path)
+            # Make face neutral
+            face_display.display_neutral_face()
+
+            # Scan for a new object
+            image_path = tracker.scan_for_new_object()
+
+            if image_path:
+                logger.info(f"Captured image: {image_path}")
                 
-            #     detected_object = garbage_tracker.process_latest_image()
-            #     logger.info(f"Detected Object: {detected_object}")
+                # Process the captured image
+                response_objects = client.prompt(image_path)
 
-            #     # Simulate further processing or display results
-            #     print(f"Object recognized: {detected_object}")
+                # Tell the user what the object is and where to put it
+                instructions = turn_response_to_text(response_objects)
 
-            #     # Simulated delay before resuming scanning (Optional)
-            #     logger.info("Processing complete. Returning to scanning mode.")
+                # Turn suggestions to speech
+                for instruction in instructions:
+                    tts_manager.speak(instruction)
 
-            # Look for object in specific locations
-            print("Capturing Image")
-            image = garbage_tracker._capture_image()
-            print(image)
-            input("INPUT")
+                # Track the object
+
+                # Check that the object was put in the right place
+                result = random.choice(
+                    [ResultType.CORRECT, ResultType.INCORRECT])
+
+                # Display the face
+                face_display.display_happy_face(
+                ) if result == ResultType.CORRECT else face_display.display_angry_face()
+
+                # Generate a comment based on the result
+                comment = get_comment(result)
+
+                # Turn comment to speech
+                for sentence in comment:
+                    tts_manager.speak(sentence)
+
 
     except KeyboardInterrupt:
         logger.info("Shutting down system...")
     except Exception as e:
         logger.critical(f"Unhandled exception: {e}")
     finally:
-        garbage_tracker.cleanup()
+        tracker.cleanup()
+
 
 if __name__ == "__main__":
     main()

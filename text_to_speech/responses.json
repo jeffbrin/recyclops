@@ -1,0 +1,33 @@
+{
+    "correct": [
+        ["Great job", "You’re recycling wizard"],
+        ["Way to go", "That’s exactly the right bin"],
+        ["You’re saving the planet one item at a time", "Keep it up"],
+        ["Perfect", "You nailed it"],
+        ["Nice", "This is how we make a difference"],
+        ["Brilliant work", "Every small step counts"],
+        ["You’ve got this", "Keep sorting like a pro"],
+        ["High five", "That’s the right spot"],
+        ["Awesome", "The Earth thanks you"]
+    ],
+    "incorrect": [
+        ["Wow, close... but not quite", "Try again, genius"],
+        ["The recycling bin says 'thanks for nothing!'"],
+        ["Impressive aim, wrong target though"],
+        ["Are we even trying to recycle here"],
+        ["That was bold", "Completely wrong, but bold"],
+        ["Well, at least you threw it in a bin", "Just not the right one"],
+        ["Creative placement", "but it doesn’t go there"],
+        ["Did you even read the label", "Just curious"],
+        ["The landfill appreciates your effort"],
+        ["A valiant effort", "For someone who doesn’t know what recycling is"],
+        ["Recycling", "Never heard of it, huh"],
+        ["This isn’t rocket science", "but you’re making it look like it is"],
+        ["That’s not where it goes", "but at least you tried"],
+        ["Hmm, interesting choice", "Wrong, but interesting"],
+        ["This is why aliens think humans are hopeless"],
+        ["Even the trash is shaking its head in disappointment"],
+        ["That’s one way to do it", "just not the right way"],
+        ["You almost had it", "Almost", "But no"]
+    ]
+}

@@ -5,11 +5,11 @@ from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
 
 from .utils import base64_encode_image_from_file
-from .promptoutput import parse_api_response, ResponseComponent
+from .prompt_output import parse_api_response, ResponseComponent
 
 
 class OpenAIClient(OpenAI):
-     
+
     client: OpenAI
     PROMPT_TEMPLATE: str = """
 Instructions:
@@ -25,17 +25,17 @@ Questions:
 Format:
 
 Return Format:
-- Return only a list of JSON objects, where each object maps a component name, the material and the disposable category. Only return
+- Return only a list of JSON objects, where each object maps a component name, a description of the component, the material and the disposable category. Only return
 the JSON objects absolutely no prose. Do not include ```json to start or ``` to end."""
 
     def __init__(self, municipality: str = "Montreal", model: str = "gpt-4o", temperature: int = 1, max_tokens: int = 1024):
-            load_dotenv(".env")
-            api_key = os.environ.get("API_KEY")
-            self.client = OpenAI(api_key=api_key)
-            self.model = model
-            self.temperature = temperature
-            self.max_tokens = max_tokens
-            self.municipality = municipality
+        load_dotenv(".env")
+        api_key = os.environ.get("API_KEY")
+        self.client = OpenAI(api_key=api_key)
+        self.model = model
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.municipality = municipality
 
     def _prompt_model(self, image_bytes: bytes) -> list[ResponseComponent]:
         """
@@ -54,20 +54,20 @@ the JSON objects absolutely no prose. Do not include ```json to start or ``` to 
         response: ChatCompletion = self.client.chat.completions.create(
             model=self.model,
             messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": self._generate_prompt(),
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{image_bytes}"},
-                    },
-                ],
-            }
-        ],
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": self._generate_prompt(),
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/jpeg;base64,{image_bytes}"},
+                        },
+                    ],
+                }
+            ],
             temperature=self.temperature,
             max_tokens=self.max_tokens
         )
@@ -102,6 +102,3 @@ the JSON objects absolutely no prose. Do not include ```json to start or ``` to 
         """
         image_bytes = base64_encode_image_from_file(image_path)
         return self._prompt_model(image_bytes)
-
-
-

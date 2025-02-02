@@ -9,6 +9,7 @@ from picamera2 import Picamera2
 # Initialize the logger
 logger = get_logger(__name__)
 
+
 class IMX500Camera:
     def __init__(self, image_path="captured_images/"):
         """
@@ -62,6 +63,7 @@ class IMX500Camera:
         Placeholder for any cleanup operations if needed.
         """
         logger.info("IMX500 Camera cleanup complete.")
+
 
 if __name__ == "__main__":
     cam = IMX500Camera()
