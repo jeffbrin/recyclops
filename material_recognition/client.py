@@ -42,7 +42,7 @@ Return Format:
 - Return a single string containing the name of the component and nothing else. The only exception is when you can't identify
 the object, in which case, answer with "Unidentified"."""
 
-    def __init__(self, municipality: str = "Montreal", model: str = "gpt-4o", temperature: int = 1, max_tokens: int = 1024):
+    def __init__(self, municipality: str = "Montreal", model: str = "gpt-4o", temperature: int = 0, max_tokens: int = 1024):
         load_dotenv(".env")
         api_key = os.environ.get("API_KEY")
         self.client = OpenAI(api_key=api_key)

@@ -1,3 +1,4 @@
+import PIL.Image
 import cv2
 import numpy as np
 import os
@@ -5,7 +6,7 @@ import time
 from time import sleep
 import PIL
 
-def motion_detection(image_filepath: str, previous_image_filepath: str, mask_dim: list[list, list] =  [[[0, 500], [0, 500]]]) -> int:
+def motion_detection(image_filepath: str, previous_image_filepath: str, mask_dim: list[list, list] =  [[[0, 500], [0, 500]]], take_image_funct = lambda: None) -> int:
     """
     Returns the index of the mask where motion was detected.
     Returns -1 if no motion was detected.
@@ -31,16 +32,21 @@ def motion_detection(image_filepath: str, previous_image_filepath: str, mask_dim
         total_pixels = (mask[0][1] - mask[0][0]) * (mask[1][1] - mask[1][0])
         motion_ratio = motion_pixels / total_pixels
 
-
         if motion_ratio >= motion_threshold:
+
+            sleep(0.15)
+            filename = take_image_funct()
+            img = cv2.imread(filename)
+            img = masking(img, mask)
+
             print("MOVEMENT")
             # TODO: Remove
             cv2.namedWindow('frame', cv2.WINDOW_AUTOSIZE)
             cv2.imshow('window', thresh)
             cv2.waitKey(1000)
             cv2.destroyAllWindows()
-            cv2.imwrite(masking(img, mask), "/captured_images/masked_item.jpg")
-            return i, "/captured_images/masked_item.jpg"
+            cv2.imwrite("masked_item.jpg", masking(img, mask))
+            return i, "masked_item.jpg"
     return -1, None
 
 def masking(image, mask : list[list, list]):
