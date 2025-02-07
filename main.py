@@ -37,6 +37,7 @@ def main():
 
     items = []
     items_to_bin_mapping = {}
+    last_index = -1
     try:
         while True:
 
@@ -54,7 +55,7 @@ def main():
                     # Process the captured image
                     response_objects = client.prompt(image_path)
                     response_objects = list(
-                        filter(lambda x: x.component_name is not None, response_objects))
+                        filter(lambda x: x.component_name is not None and (x.component_name.lower() != "box" and x.material.lower() != "cardboard"), response_objects))
                     items_to_bin_mapping = {obj.component_name.lower(
                     ): obj.disposable_category for obj in response_objects}
 
@@ -75,16 +76,17 @@ def main():
                             items.append(component.component_name.lower())
 
             elif state == TRACKING:
+                
                 filename = tracker._capture_image()
                 if last_image is None:
                     last_image = filename
-                mask_idx, masked_image_filepath = motion_detection(filename, last_image, MASK)
+                mask_idx, masked_image_filepath = motion_detection(filename, last_image, MASK, tracker._capture_image)
                 last_image = filename
 
-                sleep(0.3)
+                sleep(0.05)
 
                 # Prompt openai to see what item was placed in the bin
-                if mask_idx != -1:
+                if mask_idx != -1 and last_index == -1:
 
                     component_name = client.prompt_which_part(masked_image_filepath, items)
                     tts_manager.speak(
@@ -92,7 +94,7 @@ def main():
 
                     # Check that the object was put in the right place
                     result = ResultType.CORRECT if component_name.lower(
-                    ) in items_to_bin_mapping and items_to_bin_mapping == mask_to_region_mapping[mask_idx] else ResultType.INCORRECT
+                    ) in items_to_bin_mapping and items_to_bin_mapping[component_name.lower()] == mask_to_region_mapping[mask_idx] else ResultType.INCORRECT
                     # result = random.choice(
                     #     [ResultType.CORRECT, ResultType.INCORRECT])
 
@@ -108,9 +110,10 @@ def main():
                         tts_manager.speak(sentence)
 
                 # Find better way of going back to previous state
-                if time() - tracking_start_time > 30:
+                if time() - tracking_start_time > 45:
                     state = SCANNING
                     last_image = None
+                last_index = mask_idx
 
     except KeyboardInterrupt:
         logger.info("Shutting down system...")
